@@ -74,15 +74,62 @@ def write_file_lines(file_lines):
 
 
 def reset():
-    delete_missing_btn.config(state="disabled")
     fix_dups_btn.config(state="disabled")
     strip_file_btn.config(state="normal")
+
+
+def create_file_nested(file_path, content="Sample Text"):
+    try:
+        directory = os.path.dirname(file_path)
+        os.makedirs(directory)
+    except OSError, e:
+        if not os.path.isdir(directory):
+            raise
+
+    f = open(file_path, 'w')
+    try:
+        f.write(content)
+    except Exception, e:
+        # except Exception as e:
+        log(str(e))
+    f.close()
 
 
 write_to_log_file("setting TCL_LIBRARY to %s" % tcl_lib)
 os.environ['TCL_LIBRARY'] = tcl_lib
 write_to_log_file("setting TK_LIBRARY to %s" % tk_lib)
 os.environ['TK_LIBRARY'] = tk_lib
+
+
+def find_file(file_path):
+    file_name = os.path.basename(file_path)
+    drive, _ = os.path.splitdrive(file_path)
+    directories = os.path.dirname(file_path).split(os.sep)
+    root = os.path.join(drive, os.sep, directories[1])
+
+    log("Searching for '%s' in '%s'" % (file_name, root))
+    files = []
+    # r=root, d=directories, f = files
+    for r, d, f in os.walk(root):
+        for cf in f:
+            if file_name == cf:
+                files.append(os.path.join(r, cf))
+
+    log("Candidates: %s" % ','.join(files))
+
+    return files
+
+
+def get_file_path_from_line(line):
+    split_text = line.strip().split(' ')
+    current_file = ""
+    for part in split_text:
+        if '.' in part:
+            current_file = current_file + ("%s " % part)
+            break
+        current_file = current_file + ("%s " % part)
+    current_file = current_file.strip()
+    return current_file
 
 
 def find_dups():
@@ -103,41 +150,35 @@ def find_dups():
 
     counter = 0
     for line in file_lines:
-        print(line)
-        split_text = line.strip().split(' ')
-        current_file = ""
-        for part in split_text:
-            if '.' in part:
-                current_file = current_file + ("%s " % part)
-                break
-            current_file = current_file + ("%s " % part)
-        current_file = current_file.strip()
+        # print(line)
+        current_file = get_file_path_from_line(line)
 
-        if not os.path.exists(current_file):
-            missing_files_lines.append(counter + 1)
-            log("Warning! file doesn't exist: '%s'" % current_file)
+        if current_file != '':
+            if current_file and not os.path.exists(current_file):
+                missing_files_lines.append(counter + 1)
+                # create_file_nested(current_file) # debug purpose only
+                log("Warning! file doesn't exist: '%s'" % current_file)
 
-        for j in range(counter, len(file_lines)):
-            if counter != j and file_lines[counter].strip() == file_lines[j].strip():
-                for match in duplicates:
-                    if counter + 1 in match and j + 1 in match:
-                        break
-                    elif (counter + 1) in match:
-                        match.add(j + 1)
-                        break
-                    elif j + 1 in match:
-                        match.add(counter + 1)
-                        break
-                else:
-                    new_set = set()
-                    new_set.add(counter + 1)
-                    new_set.add(j + 1)
-                    duplicates.append(new_set)
+            for j in range(counter, len(file_lines)):
+                if counter != j and file_lines[counter].strip() == file_lines[j].strip():
+                    for match in duplicates:
+                        if counter + 1 in match and j + 1 in match:
+                            break
+                        elif (counter + 1) in match:
+                            match.add(j + 1)
+                            break
+                        elif j + 1 in match:
+                            match.add(counter + 1)
+                            break
+                    else:
+                        new_set = set()
+                        new_set.add(counter + 1)
+                        new_set.add(j + 1)
+                        duplicates.append(new_set)
         counter += 1
 
     if missing_files_lines is not None and len(missing_files_lines) > 0:
-        delete_missing_btn.config(state=NORMAL)
-        delete_missing_btn["text"] = "%s (%s)" % (DELETE_MISSING_TEXT, len(missing_files_lines))
+        fix_missing_btn.config(state=NORMAL)
     if not duplicates:
         log("No duplicates found!")
     else:
@@ -149,6 +190,7 @@ def find_dups():
 
         log("To fix duplicates, press 'Fix Duplicates' button")
         fix_dups_btn.config(state=NORMAL)
+    # fix_missing()
 
 
 def fix_dups():
@@ -167,20 +209,20 @@ def fix_dups():
     log("Done!")
 
 
-def delete_missing():
-    global missing_files_lines
-    file_lines = get_file_lines()
-    clear_count = 0
-    if missing_files_lines is not None and len(missing_files_lines) > 0:
-        for i in missing_files_lines:
-            if (i - 1) < len(file_lines):
-                file_lines[i - 1] = ""
-                clear_count += 1
-            else:
-                log("Warning! request to delete out of range entry (possibly deleted as duplicate")
-
-        log("Cleared %s line(s)" % clear_count)
-        write_file_lines(file_lines)
+# def delete_missing():
+#     global missing_files_lines
+#     file_lines = get_file_lines()
+#     clear_count = 0
+#     if missing_files_lines is not None and len(missing_files_lines) > 0:
+#         for i in missing_files_lines:
+#             if (i - 1) < len(file_lines):
+#                 file_lines[i - 1] = ""
+#                 clear_count += 1
+#             else:
+#                 log("Warning! request to delete out of range entry (possibly deleted as duplicate")
+#
+#         log("Cleared %s line(s)" % clear_count)
+#         write_file_lines(file_lines)
 
 
 def strip_file():
@@ -195,6 +237,39 @@ def strip_file():
 
     log("Stripped %s line(s)" % stripped)
     write_file_lines(new_lines)
+
+
+def fix_missing():
+    global missing_files_lines
+    file_lines = get_file_lines()
+    alternative_list = []
+    # file_change_map = {}
+    if missing_files_lines is not None and len(missing_files_lines) > 0:
+        for i in missing_files_lines:
+            if (i - 1) < len(file_lines):
+                current_file = get_file_path_from_line(file_lines[i - 1])
+                alternatives = find_file(current_file)
+                af = AlternativeFile(old_path=current_file, os_path="###".join(alternatives), line_index=i - 1)
+                alternative_list.append(af)
+                # file_change_map[current_file] = alternatives[0]
+                # print("alt: %s" % alternatives)
+                # file_lines[i - 1] = file_lines[i - 1].rstrip("\n") + "  ###" + '---'.join(alternatives) + "\n"
+            else:
+                log("Warning! request to delete out of range entry (possibly deleted as duplicate")
+
+        d = AlternativeFileDialog("Please check if alternative files are ok", alternative_list)
+        app.wait_window(d.top)
+        log('\n'.join([str(x) for x in alternative_list]))
+
+        for alternative in alternative_list:
+            if alternative.path_in_fs == '':
+                file_lines[alternative.line_index] = os.linesep
+            else:
+                file_lines[alternative.line_index] = file_lines[alternative.line_index].replace(alternative.path_in_set,
+                                                                                                alternative.path_in_fs)
+
+        write_file_lines(file_lines)
+        log("Fix Done!")
 
 
 def set_file_types():
@@ -228,9 +303,97 @@ def clear_log():
     log_panel.delete('1.0', END)
 
 
+class AlternativeFile(object):
+    def __init__(self, **kwargs):
+        self.path_in_set = kwargs.get("old_path", None)
+        self.path_in_fs = kwargs.get("os_path", None)
+        self.line_index = kwargs.get("line_index")
+
+    def __str__(self):
+        return "i: %s - set: %s, fs: %s" % (self.line_index, self.path_in_set, self.path_in_fs)
+
+
+class AlternativeFileDialog(object):
+    root = None
+
+    def __init__(self, msg, alternative_list=None):
+        """
+        msg = <str> the message to be displayed
+        dict_key = <sequence> (dictionary, key) to associate with user input
+        (providing a sequence for dict_key creates an entry for user input)
+        """
+        self.top = Toplevel(AlternativeFileDialog.root)
+        dialog_height = 120
+        if alternative_list:
+            dialog_height += (len(alternative_list) * 20)
+        self.top.geometry("400x%s+200+200" % dialog_height)
+        frm = Frame(self.top, borderwidth=4, relief='ridge')
+        frm.pack(fill='both', expand=True)
+
+        label = Label(frm, text=msg)
+        label.pack(padx=4, pady=4)
+
+        headers_frm = Frame(frm)
+        headers_frm.pack(fill='both')
+
+        header1 = Label(headers_frm, text="Path in SET")
+        header1.pack(side=LEFT, padx=3, pady=4, fill=X, expand=True)
+        header2 = Label(headers_frm, text="Path in File System")
+        header2.pack(side=LEFT, padx=3, pady=4, fill=X, expand=True)
+
+        self.table_frame = Frame(frm)
+        self.table_frame.pack(anchor=N, fill=X, expand=True, side=TOP)
+
+        row = 0
+        if alternative_list is not None:
+            for item in alternative_list:  # Rows
+                self.table_frame.grid_columnconfigure(0, weight=1, uniform="group%s" % row)
+                self.table_frame.grid_columnconfigure(1, weight=1, uniform="group%s" % row)
+                self.table_frame.grid_rowconfigure(row)
+
+                key_entry_text = StringVar()
+                key_entry_text.set(item.path_in_set)
+                b0 = Entry(self.table_frame, textvariable=key_entry_text)
+                b0.config(state=DISABLED)
+                b0.grid(row=row, column=0, sticky='news', padx=3)
+
+                value_entry_text = StringVar()
+                value_entry_text.set(item.path_in_fs)
+                b1 = Entry(self.table_frame, textvariable=value_entry_text)
+                b1.grid(row=row, column=1, sticky='news', padx=3)
+
+                row += 1
+
+        dialog_actions_frame = Frame(frm)
+        dialog_actions_frame.pack(side=BOTTOM)
+
+        b_submit = Button(dialog_actions_frame, text='Submit')
+        b_submit['command'] = lambda: self.entry_to_dict(alternative_list)
+        b_submit.pack(side=LEFT)
+
+        b_cancel = Button(dialog_actions_frame, text='Cancel')
+        b_cancel['command'] = self.top.destroy
+        b_cancel.pack(side=LEFT, padx=4, pady=4)
+
+    def entry_to_dict(self, alternative_list):
+        it = iter(self.table_frame.winfo_children())
+        for child in it:
+            to_change = [x for x in alternative_list if x.path_in_set == child.get()]
+            if len(to_change) == 0:
+                log("Error! cannot find %s in %s" % (child.get(), alternative_list))
+            elif len(to_change) > 1:
+                log("Error! Found multiple entries named %s in %s" % (child.get(), alternative_list))
+            else:
+                to_change = to_change[0]
+                to_change.path_in_fs = it.next().get()
+        self.top.destroy()
+
+
 app = Tk()
 app.title("Duplicate Finder")
 app.geometry("560x220+200+200")
+
+AlternativeFileDialog.root = app
 
 source_frame = Frame(app)
 source_frame.pack()
@@ -266,9 +429,9 @@ find_dups_btn = Button(actions_frame, text='Find Duplicates', command=find_dups)
 find_dups_btn.config(state=DISABLED)
 find_dups_btn.pack(side=LEFT, padx=5, pady=5)
 
-delete_missing_btn = Button(actions_frame, text='Delete Missing', command=delete_missing)
-delete_missing_btn.config(state=DISABLED)
-delete_missing_btn.pack(side=LEFT, padx=5, pady=5)
+fix_missing_btn = Button(actions_frame, text='Fix Missing', command=fix_missing)
+fix_missing_btn.config(state=DISABLED)
+fix_missing_btn.pack(side=LEFT, padx=5, pady=5)
 
 strip_file_btn = Button(actions_frame, text='Strip File', command=strip_file)
 strip_file_btn.config(state=DISABLED)
