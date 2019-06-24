@@ -73,9 +73,15 @@ def write_file_lines(file_lines):
     f.close()
 
 
-def reset():
+def reset_buttons():
     fix_dups_btn.config(state="disabled")
-    strip_file_btn.config(state="normal")
+    fix_missing_btn.config(state="disabled")
+    # strip_file_btn.config(state="normal")
+
+
+def reset():
+    reset_buttons()
+    clear_log()
 
 
 def create_file_nested(file_path, content="Sample Text"):
@@ -133,7 +139,7 @@ def get_file_path_from_line(line):
 
 
 def find_dups():
-    clear_log()
+    reset()
     global work_file, missing_files_lines, duplicates
     duplicates = list(set())
     missing_files_lines = []
@@ -190,7 +196,6 @@ def find_dups():
 
         log("To fix duplicates, press 'Fix Duplicates' button")
         fix_dups_btn.config(state=NORMAL)
-    # fix_missing()
 
 
 def fix_dups():
@@ -205,8 +210,9 @@ def fix_dups():
             log("Removing line No: %s" % str(next_to_kill + 1))
             file_lines[next_to_kill] = ""
 
-    write_file_lines(file_lines)
-    log("Done!")
+    new_lines = get_stripped_lines(file_lines)
+    write_file_lines(new_lines)
+    log("Fix Duplicates Done!")
 
 
 # def delete_missing():
@@ -225,8 +231,7 @@ def fix_dups():
 #         write_file_lines(file_lines)
 
 
-def strip_file():
-    file_lines = get_file_lines()
+def get_stripped_lines(file_lines):
     new_lines = []
     stripped = 0
     for line in file_lines:
@@ -236,14 +241,31 @@ def strip_file():
             stripped += 1
 
     log("Stripped %s line(s)" % stripped)
+    return new_lines
+
+
+def strip_file():
+    file_lines = get_file_lines()
+    new_lines = get_stripped_lines(file_lines)
     write_file_lines(new_lines)
 
 
 def fix_missing():
     global missing_files_lines
+    missing_files_lines = []
     file_lines = get_file_lines()
+
+    counter = 0
+    for line in file_lines:
+        current_file = get_file_path_from_line(line)
+        if current_file != '':
+            if current_file and not os.path.exists(current_file):
+                missing_files_lines.append(counter + 1)
+                # create_file_nested(current_file) # debug purpose only
+                log("Warning! file doesn't exist: '%s'" % current_file)
+        counter += 1
+
     alternative_list = []
-    # file_change_map = {}
     if missing_files_lines is not None and len(missing_files_lines) > 0:
         for i in missing_files_lines:
             if (i - 1) < len(file_lines):
@@ -251,25 +273,26 @@ def fix_missing():
                 alternatives = find_file(current_file)
                 af = AlternativeFile(old_path=current_file, os_path="###".join(alternatives), line_index=i - 1)
                 alternative_list.append(af)
-                # file_change_map[current_file] = alternatives[0]
-                # print("alt: %s" % alternatives)
-                # file_lines[i - 1] = file_lines[i - 1].rstrip("\n") + "  ###" + '---'.join(alternatives) + "\n"
             else:
                 log("Warning! request to delete out of range entry (possibly deleted as duplicate")
 
         d = AlternativeFileDialog("Please check if alternative files are ok", alternative_list)
         app.wait_window(d.top)
-        log('\n'.join([str(x) for x in alternative_list]))
 
-        for alternative in alternative_list:
-            if alternative.path_in_fs == '':
-                file_lines[alternative.line_index] = os.linesep
-            else:
-                file_lines[alternative.line_index] = file_lines[alternative.line_index].replace(alternative.path_in_set,
-                                                                                                alternative.path_in_fs)
+        if not d.cancelled:
+            for alternative in alternative_list:
+                if alternative.path_in_fs == '':
+                    file_lines[alternative.line_index] = os.linesep
+                else:
+                    file_lines[alternative.line_index] = file_lines[alternative.line_index].replace(
+                        alternative.path_in_set,
+                        alternative.path_in_fs)
 
-        write_file_lines(file_lines)
-        log("Fix Done!")
+            new_lines = get_stripped_lines(file_lines)
+            write_file_lines(new_lines)
+            log("Fix Missing Done!")
+        else:
+            log("Fix Missing Aborted!")
 
 
 def set_file_types():
@@ -341,6 +364,7 @@ class AlternativeFileDialog(object):
         header2 = Label(headers_frm, text="Path in File System")
         header2.pack(side=LEFT, padx=3, pady=4, fill=X, expand=True)
 
+        self.cancelled = False
         self.table_frame = Frame(frm)
         self.table_frame.pack(anchor=N, fill=X, expand=True, side=TOP)
 
@@ -372,7 +396,7 @@ class AlternativeFileDialog(object):
         b_submit.pack(side=LEFT)
 
         b_cancel = Button(dialog_actions_frame, text='Cancel')
-        b_cancel['command'] = self.top.destroy
+        b_cancel['command'] = self.cancel
         b_cancel.pack(side=LEFT, padx=4, pady=4)
 
     def entry_to_dict(self, alternative_list):
@@ -386,6 +410,10 @@ class AlternativeFileDialog(object):
             else:
                 to_change = to_change[0]
                 to_change.path_in_fs = it.next().get()
+        self.top.destroy()
+
+    def cancel(self):
+        self.cancelled = True
         self.top.destroy()
 
 
@@ -425,7 +453,7 @@ fix_dups_btn = Button(actions_frame, text='Fix Duplicates', command=fix_dups)
 fix_dups_btn.config(state=DISABLED)
 fix_dups_btn.pack(side=LEFT, padx=5, pady=5)
 
-find_dups_btn = Button(actions_frame, text='Find Duplicates', command=find_dups)
+find_dups_btn = Button(actions_frame, text='Find Errors', command=find_dups)
 find_dups_btn.config(state=DISABLED)
 find_dups_btn.pack(side=LEFT, padx=5, pady=5)
 
@@ -433,9 +461,6 @@ fix_missing_btn = Button(actions_frame, text='Fix Missing', command=fix_missing)
 fix_missing_btn.config(state=DISABLED)
 fix_missing_btn.pack(side=LEFT, padx=5, pady=5)
 
-strip_file_btn = Button(actions_frame, text='Strip File', command=strip_file)
-strip_file_btn.config(state=DISABLED)
-strip_file_btn.pack(side=LEFT, padx=5, pady=5)
 # app.protocol("WM_DELETE_WINDOW", on_closing)
 app.mainloop()
 # >c:\Python24\python.exe setup.py py2exe
