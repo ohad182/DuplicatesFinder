@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import os
+import time
 import ConfigParser
 
 from Tkinter import *
@@ -14,10 +15,20 @@ tk_lib = cwd + '\\tcl\\tcl8.4'
 select_file_dir = cwd
 settings_path = os.path.join(cwd, 'settings.ini')
 
+PATH_SEP = os.path.sep
+
+if PATH_SEP == '/':
+    NON_PATH_SEP = '\\'
+else:
+    NON_PATH_SEP = '/'
+
+DATE_FORMAT = "%d/%m/%Y %H:%M:%S"
+
 verbose = False
 ask_delete = True
 log_file = "C:\\Temp\\DupsFinderLog.txt"
 work_file = None
+fs_search_dir = None
 duplicates = list(set())
 file_types = '.SET'
 missing_files_lines = []
@@ -85,11 +96,12 @@ def reset():
 
 
 def create_file_nested(file_path, content="Sample Text"):
+    directory = None
     try:
         directory = os.path.dirname(file_path)
         os.makedirs(directory)
     except OSError, e:
-        if not os.path.isdir(directory):
+        if directory is not None and not os.path.isdir(directory):
             raise
 
     f = open(file_path, 'w')
@@ -107,7 +119,7 @@ write_to_log_file("setting TK_LIBRARY to %s" % tk_lib)
 os.environ['TK_LIBRARY'] = tk_lib
 
 
-def find_file(file_path):
+def search_file(file_path):
     file_name = os.path.basename(file_path)
     drive, _ = os.path.splitdrive(file_path)
     directories = os.path.dirname(file_path).split(os.sep)
@@ -118,7 +130,7 @@ def find_file(file_path):
     # r=root, d=directories, f = files
     for r, d, f in os.walk(root):
         for cf in f:
-            if file_name == cf:
+            if file_name.lower() == cf.lower():
                 files.append(os.path.join(r, cf))
 
     log("Candidates: %s" % ','.join(files))
@@ -255,6 +267,7 @@ def fix_missing():
     missing_files_lines = []
     file_lines = get_file_lines()
 
+    log("Started fix missing files!")
     counter = 0
     for line in file_lines:
         current_file = get_file_path_from_line(line)
@@ -265,12 +278,14 @@ def fix_missing():
                 log("Warning! file doesn't exist: '%s'" % current_file)
         counter += 1
 
+    log("Found %s missing files ^^..." % counter)
+
     alternative_list = []
     if missing_files_lines is not None and len(missing_files_lines) > 0:
         for i in missing_files_lines:
             if (i - 1) < len(file_lines):
                 current_file = get_file_path_from_line(file_lines[i - 1])
-                alternatives = find_file(current_file)
+                alternatives = search_file(current_file)
                 af = AlternativeFile(old_path=current_file, os_path="###".join(alternatives), line_index=i - 1)
                 alternative_list.append(af)
             else:
@@ -293,6 +308,11 @@ def fix_missing():
             log("Fix Missing Done!")
         else:
             log("Fix Missing Aborted!")
+
+
+def search_folder():
+    d = SearchDuplicatesDialog()
+    app.wait_window(d.top)
 
 
 def set_file_types():
@@ -322,8 +342,75 @@ def select_file():
         reset()
 
 
+def select_folder():
+    global fs_search_dir
+    dlg_result = tkFileDialog.askdirectory(title="Select Folder", initialdir=select_file_dir)
+    if dlg_result is not None:
+        fs_search_dir = dlg_result
+        print("Search fs set to %s" % fs_search_dir)
+        fs_src_entry_text.set(fs_search_dir)
+        fs_search_btn.config(state=NORMAL)
+
+
 def clear_log():
     log_panel.delete('1.0', END)
+
+
+def search_fs_duplicates():
+    global fs_search_dir
+    files_info = []
+    grouped_files = dict()
+    # r=root, d=directories, f = files
+    for r, d, f in os.walk(fs_search_dir):
+        for fi in f:
+            files_info.append(FileInfo(name=fi, full_path=os.path.join(r, fi)))
+
+    log("Scanned %s files" % len(files_info))
+
+    has_duplicates = False
+    for f in files_info:
+        if f.name in grouped_files:
+            if not has_duplicates:
+                has_duplicates = True
+            grouped_files[f.name].append(f)
+        else:
+            grouped_files[f.name] = [f]
+
+    if not has_duplicates:
+        log("No duplicates found!")
+        # self.table_label.config(text="No duplicates found!")
+    else:
+        # for widget in self.table_frame.winfo_children():
+        #     widget.destroy()
+
+        # self.table_label.config(text="Found duplicates:")
+        # fs_show_duplicates_btn.config(state=NORMAL)
+        for filename, file_info in grouped_files.iteritems():
+            if len(file_info) > 1:
+                log("%s has %d duplicates" % (filename, len(file_info)))
+                for fi in file_info:
+                    log("\t%s - %s" % (fi.full_path, time.strftime(DATE_FORMAT, time.localtime(fi.date))))
+                log("")
+                # TODO: keep from here
+                # file_name_label = LabelFrame(self.table_frame, text=filename)
+                # file_name_label.pack(fill="both", expand="yes")
+
+
+def show_fs_duplicates():
+    d = SearchDuplicatesDialog()
+    app.wait_window(d.top)
+
+
+class FileInfo(object):
+    def __init__(self, **kwargs):
+        fp = kwargs.get("full_path")
+        if NON_PATH_SEP in fp:
+            fp = fp.replace(NON_PATH_SEP, PATH_SEP)
+        self.name = kwargs.get("name")
+        self.full_path = fp
+        self.date = kwargs.get("date", None)
+        if self.date is None:
+            self.date = os.path.getmtime(self.full_path)
 
 
 class AlternativeFile(object):
@@ -417,11 +504,88 @@ class AlternativeFileDialog(object):
         self.top.destroy()
 
 
+class SearchDuplicatesDialog(object):
+    root = None
+
+    def __init__(self):
+        """
+        msg = <str> the message to be displayed
+        dict_key = <sequence> (dictionary, key) to associate with user input
+        (providing a sequence for dict_key creates an entry for user input)
+        """
+        self.top = Toplevel(SearchDuplicatesDialog.root)
+        # self.top.wm_attributes('-topmost', 1)  # TODO: find fix
+        dialog_height = 120
+        self.files_info = []
+        self.grouped_files = dict()
+
+        self.top.geometry("500x%s+200+200" % dialog_height)
+        frm = Frame(self.top, borderwidth=4, relief='ridge')
+        frm.pack(fill='both', expand=True)
+
+        src_frame = Frame(frm)
+        src_frame.pack()
+
+        # self.src_entry_text = StringVar()
+        # src_entry = Entry(src_frame, textvariable=self.src_entry_text, width=50)
+        # src_entry.config(state=DISABLED)
+        # src_entry.pack(side=LEFT, expand=YES, padx=5, pady=15, fill=X)
+        # # select file button
+        # selectFolderBtn = Button(src_frame, text='Select Folder', command=self.select_folder)
+        # selectFolderBtn.pack(side=LEFT, padx=5, pady=15)
+        #
+        # self.searchBtn = Button(src_frame, text='Search', command=self.search)
+        # self.searchBtn.config(state=DISABLED)
+        # self.searchBtn.pack(side=LEFT, padx=5, pady=15)
+        #
+        # # TODO: ui idea -> [textbox with path] - [openlocationbutton, deletefilebuton]
+        # self.table_frame = Frame(frm)
+        # self.table_frame.pack(anchor=N, fill=X, expand=True, side=TOP)
+        #
+        # self.table_label = Label(self.table_frame, text="Click Search")
+        # self.table_label.pack(padx=4, pady=4)
+
+        # row = 0
+        # if alternative_list is not None:
+        #     for item in alternative_list:  # Rows
+        #         self.table_frame.grid_columnconfigure(0, weight=1, uniform="group%s" % row)
+        #         self.table_frame.grid_columnconfigure(1, weight=1, uniform="group%s" % row)
+        #         self.table_frame.grid_rowconfigure(row)
+        #
+        #         key_entry_text = StringVar()
+        #         key_entry_text.set(item.path_in_set)
+        #         b0 = Entry(self.table_frame, textvariable=key_entry_text)
+        #         b0.config(state=DISABLED)
+        #         b0.grid(row=row, column=0, sticky='news', padx=3)
+        #
+        #         value_entry_text = StringVar()
+        #         value_entry_text.set(item.path_in_fs)
+        #         b1 = Entry(self.table_frame, textvariable=value_entry_text)
+        #         b1.grid(row=row, column=1, sticky='news', padx=3)
+        #
+        #         row += 1
+
+        dialog_actions_frame = Frame(frm)
+        dialog_actions_frame.pack(side=BOTTOM)
+
+        b_submit = Button(dialog_actions_frame, text='Close')
+        b_submit['command'] = self.ok
+        b_submit.pack(side=LEFT)
+
+    def ok(self):
+        self.top.destroy()
+
+    def cancel(self):
+        self.cancelled = True
+        self.top.destroy()
+
+
 app = Tk()
 app.title("Duplicate Finder")
-app.geometry("560x220+200+200")
+app.geometry("560x300+200+200")
 
 AlternativeFileDialog.root = app
+SearchDuplicatesDialog.root = app
 
 source_frame = Frame(app)
 source_frame.pack()
@@ -447,7 +611,7 @@ log_panel.config(yscrollcommand=text_scroll.set)
 # dup_actions_frame = Frame(app)
 # dup_actions_frame.pack()
 actions_frame = Frame(app)
-actions_frame.pack(side=BOTTOM)
+actions_frame.pack()
 
 fix_dups_btn = Button(actions_frame, text='Fix Duplicates', command=fix_dups)
 fix_dups_btn.config(state=DISABLED)
@@ -460,6 +624,31 @@ find_dups_btn.pack(side=LEFT, padx=5, pady=5)
 fix_missing_btn = Button(actions_frame, text='Fix Missing', command=fix_missing)
 fix_missing_btn.config(state=DISABLED)
 fix_missing_btn.pack(side=LEFT, padx=5, pady=5)
+
+# search_dups_btn = Button(actions_frame, text='Search Folder', command=search_folder)
+# search_dups_btn.pack(side=LEFT, padx=5, pady=5)
+
+fs_src_frame = Frame(app, pady=10)
+fs_src_frame.pack()
+
+fs_src_label = Label(fs_src_frame, text="Search duplicates on file system:")
+fs_src_label.pack()
+
+fs_src_entry_text = StringVar()
+fs_src_entry = Entry(fs_src_frame, textvariable=fs_src_entry_text, width=50)
+fs_src_entry.config(state=DISABLED)
+fs_src_entry.pack(side=LEFT, expand=YES, padx=5, pady=15, fill=X)
+# select file button
+fs_selectFolderBtn = Button(fs_src_frame, text='Select Folder', command=select_folder)
+fs_selectFolderBtn.pack(side=LEFT, padx=5, pady=15)
+
+fs_search_btn = Button(fs_src_frame, text='Search', command=search_fs_duplicates)
+fs_search_btn.config(state=DISABLED)
+fs_search_btn.pack(side=LEFT, padx=5, pady=15)
+
+fs_show_duplicates_btn = Button(fs_src_frame, text='Show fs duplicates', command=show_fs_duplicates)
+fs_show_duplicates_btn.config(state=DISABLED)
+fs_show_duplicates_btn.pack(side=LEFT, padx=5, pady=15)
 
 # app.protocol("WM_DELETE_WINDOW", on_closing)
 app.mainloop()

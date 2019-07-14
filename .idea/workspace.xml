@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ec237de5-7cb2-4c42-8f9d-04e12c27366e" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DuplicateFinder.py" beforeDir="false" afterPath="$PROJECT_DIR$/DuplicateFinder.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dist/DuplicateFinder.exe" beforeDir="false" afterPath="$PROJECT_DIR$/dist/DuplicateFinder.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dist/settings.ini" beforeDir="false" afterPath="$PROJECT_DIR$/dist/settings.ini" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -13,50 +13,54 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/DuplicateFinder$DupsFinder.coverage" NAME="DupsFinder Coverage Results" MODIFIED="1561353529084" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/DuplicateFinder$DupsFinder.coverage" NAME="DupsFinder Coverage Results" MODIFIED="1563019318195" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FUSProjectUsageTrigger">
     <session id="-1789448669">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="2" />
+          <entry key="project.closed" value="4" />
           <entry key="project.open.time.1" value="2" />
-          <entry key="project.open.time.2" value="1" />
+          <entry key="project.open.time.2" value="3" />
           <entry key="project.open.time.5" value="1" />
-          <entry key="project.opened" value="4" />
+          <entry key="project.opened" value="6" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="16" />
           <entry key="ini" value="84" />
-          <entry key="md" value="162" />
-          <entry key="py" value="6888" />
+          <entry key="md" value="163" />
+          <entry key="py" value="9607" />
           <entry key="txt" value="245" />
+          <entry key="xml" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Ini" value="84" />
-          <entry key="Markdown" value="162" />
+          <entry key="Markdown" value="163" />
           <entry key="PLAIN_TEXT" value="261" />
-          <entry key="Python" value="6888" />
+          <entry key="Python" value="9607" />
+          <entry key="XML" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="ini" value="2" />
           <entry key="md" value="1" />
-          <entry key="py" value="7" />
-          <entry key="txt" value="2" />
+          <entry key="py" value="13" />
+          <entry key="txt" value="3" />
+          <entry key="xml" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Ini" value="2" />
           <entry key="Markdown" value="1" />
-          <entry key="PLAIN_TEXT" value="2" />
-          <entry key="Python" value="7" />
+          <entry key="PLAIN_TEXT" value="3" />
+          <entry key="Python" value="13" />
+          <entry key="XML" value="1" />
         </counts>
       </usages-collector>
     </session>
@@ -66,85 +70,28 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/DuplicateFinder.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="281" column="26" selection-start-line="281" selection-start-column="26" selection-end-line="281" selection-end-column="26" />
+            <state relative-caret-position="297">
+              <caret line="387" column="25" selection-start-line="387" selection-start-column="25" selection-end-line="387" selection-end-column="25" />
               <folding>
                 <element signature="e#22#32#0" expanded="true" />
-                <marker date="1561378940885" expanded="true" signature="745:750" ph="..." />
-                <marker date="1561378940885" expanded="true" signature="745:965" ph="..." />
-                <marker date="1561378940885" expanded="true" signature="1592:2162" ph="..." />
-                <marker date="1561378940885" expanded="true" signature="1738:1777" ph="..." />
-                <marker date="1561378940885" expanded="true" signature="1834:2162" ph="..." />
-                <marker date="1561378940885" expanded="true" signature="2574:2890" ph="..." />
-                <marker date="1561378940885" expanded="true" signature="2924:3234" ph="..." />
-                <marker date="1561378940885" expanded="true" signature="6549:8809" ph="..." />
-                <marker date="1561378940885" expanded="true" signature="6586:6832" ph="..." />
-                <marker date="1561378940885" expanded="true" signature="6849:8809" ph="..." />
-                <marker date="1561378940885" expanded="true" signature="6983:8809" ph="..." />
-                <marker date="1561378940885" expanded="true" signature="9637:9955" ph="..." />
+                <marker date="1563093697005" expanded="true" signature="911:916" ph="..." />
+                <marker date="1563093697005" expanded="true" signature="911:1131" ph="..." />
+                <marker date="1563093697005" expanded="true" signature="1758:2375" ph="..." />
+                <marker date="1563093697005" expanded="true" signature="1904:1943" ph="..." />
+                <marker date="1563093697005" expanded="true" signature="2021:2375" ph="..." />
+                <marker date="1563093697005" expanded="true" signature="9151:9214" ph="..." />
+                <marker date="1563093697005" expanded="true" signature="11843:11906" ph="..." />
+                <marker date="1563093697005" expanded="true" signature="11929:12285" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/dist/settings.ini">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://C:/Python24/Lib/lib-tk/Tkinter.py">
+        <entry file="file://C:/Python24/Lib/lib-tk/Tkconstants.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="8">
-              <caret line="1204" column="8" selection-start-line="1204" selection-start-column="8" selection-end-line="1204" selection-end-column="8" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://C:/Python24/Lib/ntpath.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="850">
-              <caret line="157" column="4" selection-start-line="157" selection-start-column="4" selection-end-line="157" selection-end-column="4" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/README.md">
-          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-            <state split_layout="SPLIT">
-              <first_editor relative-caret-position="340">
-                <caret line="23" column="67" selection-start-line="23" selection-start-column="67" selection-end-line="23" selection-end-column="67" />
-              </first_editor>
-              <second_editor />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/README.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret selection-end-line="15" selection-end-column="50" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/settings.ini">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="1" column="31" selection-start-line="1" selection-start-column="31" selection-end-line="1" selection-end-column="31" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/stam.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="51">
-              <caret line="3" selection-start-line="3" selection-end-line="3" />
+            <state relative-caret-position="212">
+              <caret line="80" selection-start-line="80" selection-end-line="80" />
             </state>
           </provider>
         </entry>
@@ -152,8 +99,35 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://C:/Python24/Lib/lib-tk/tkFileDialog.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1445">
-              <caret line="85" column="40" selection-start-line="85" selection-start-column="30" selection-end-line="85" selection-end-column="40" />
+            <state relative-caret-position="94">
+              <caret line="100" column="20" selection-start-line="100" selection-start-column="20" selection-end-line="100" selection-end-column="20" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://C:/Python24/Lib/lib-tk/tkCommonDialog.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="85">
+              <caret line="27" column="23" selection-start-line="27" selection-start-column="23" selection-end-line="27" selection-end-column="23" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://C:/Python24/Lib/ntpath.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="399">
+              <caret line="230" column="4" selection-start-line="230" selection-start-column="4" selection-end-line="230" selection-end-column="4" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://C:/Python24/Lib/lib-tk/Tkinter.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="94">
+              <caret line="1344" selection-start-line="1344" selection-end-line="1344" />
             </state>
           </provider>
         </entry>
@@ -181,11 +155,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>print</find>
-      <find>sys</find>
-      <find>f</find>
-      <find>format</find>
-      <find>len</find>
       <find>ERROR:</find>
       <find>a line</find>
       <find>test_wx</find>
@@ -199,16 +168,23 @@
       <find>to fix</find>
       <find>convert_file_btn</find>
       <find>fix_dups_btn</find>
-      <find>find_file</find>
       <find>fix_missing</find>
       <find>delete_missing_btn</find>
       <find>tki</find>
-      <find>source_entry</find>
       <find>relief</find>
       <find>AlternativeFileDialog</find>
       <find>delete_missing</find>
-      <find>log</find>
       <find>reset</find>
+      <find>find_file</find>
+      <find>source_entry</find>
+      <find>select</find>
+      <find>root</find>
+      <find>search</find>
+      <find>log</find>
+      <find>label(</find>
+      <find>reli</find>
+      <find>SearchDuplicatesDialog</find>
+      <find>%</find>
     </findStrings>
     <replaceStrings>
       <replace>log_panel</replace>
@@ -227,8 +203,9 @@
         <option value="C:/Python24/Lib/site-packages/py2exe/build_exe.py" />
         <option value="$PROJECT_DIR$/README.txt" />
         <option value="$PROJECT_DIR$/setup.py" />
-        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/settings.ini" />
+        <option value="$PROJECT_DIR$/dist/s.xml" />
+        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/DuplicateFinder.py" />
       </list>
     </option>
@@ -251,6 +228,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -267,7 +245,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -347,20 +324,20 @@
     <frame x="1672" y="4" width="1696" height="1026" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13202934" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13080685" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49959514" weight="0.32562277" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.7004049" weight="0.3250444" />
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49572128" weight="0.27242154" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49938875" weight="0.3295964" />
       <window_info anchor="bottom" id="Gerrit" order="7" />
       <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.49938875" weight="0.3295964" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="9" sideWeight="0.4883863" visible="true" weight="0.42713004" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.51161367" side_tool="true" visible="true" weight="0.42713004" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="9" sideWeight="0.48594132" visible="true" weight="0.25531915" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5140587" side_tool="true" visible="true" weight="0.25531915" />
       <window_info anchor="bottom" id="Python Console" order="11" sideWeight="0.49938875" weight="0.3295964" />
       <window_info anchor="bottom" id="Docker" order="12" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="13" show_stripe_button="false" />
@@ -393,12 +370,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/DuplicateFinder.py</url>
-          <line>454</line>
+          <line>618</line>
           <option name="timeStamp" value="16" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/DuplicateFinder.py</url>
-          <line>157</line>
+          <line>169</line>
           <option name="timeStamp" value="17" />
         </line-breakpoint>
       </breakpoints>
@@ -417,6 +394,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/dist/settings.ini">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dist/s.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret selection-end-line="23" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/dupsfinder.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2329">
@@ -427,10 +414,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.txt">
+    <entry file="file://$PROJECT_DIR$/settings.ini">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret selection-end-line="15" selection-end-column="50" />
+        <state relative-caret-position="17">
+          <caret line="1" column="31" selection-start-line="1" selection-start-column="31" selection-end-line="1" selection-end-column="31" />
         </state>
       </provider>
     </entry>
@@ -438,13 +425,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="51">
           <caret line="3" selection-start-line="3" selection-end-line="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Python24/Lib/lib-tk/tkFileDialog.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1445">
-          <caret line="85" column="40" selection-start-line="85" selection-start-column="30" selection-end-line="85" selection-end-column="40" />
         </state>
       </provider>
     </entry>
@@ -458,58 +438,72 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://C:/Python24/Lib/lib-tk/tkCommonDialog.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="27" column="23" selection-start-line="27" selection-start-column="23" selection-end-line="27" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Python24/Lib/lib-tk/tkFileDialog.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="94">
+          <caret line="100" column="20" selection-start-line="100" selection-start-column="20" selection-end-line="100" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="340">
-            <caret line="23" column="67" selection-start-line="23" selection-start-column="67" selection-end-line="23" selection-end-column="67" />
+          <first_editor relative-caret-position="180">
+            <caret line="18" column="47" lean-forward="true" selection-start-line="18" selection-start-column="6" selection-end-line="18" selection-end-column="47" />
           </first_editor>
           <second_editor />
         </state>
       </provider>
     </entry>
-    <entry file="file://C:/Python24/Lib/ntpath.py">
+    <entry file="file://$PROJECT_DIR$/README.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="850">
-          <caret line="157" column="4" selection-start-line="157" selection-start-column="4" selection-end-line="157" selection-end-column="4" />
+        <state>
+          <caret selection-end-line="15" selection-end-column="50" />
         </state>
       </provider>
     </entry>
     <entry file="file://C:/Python24/Lib/lib-tk/Tkinter.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="8">
-          <caret line="1204" column="8" selection-start-line="1204" selection-start-column="8" selection-end-line="1204" selection-end-column="8" />
+        <state relative-caret-position="94">
+          <caret line="1344" selection-start-line="1344" selection-end-line="1344" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/settings.ini">
+    <entry file="file://C:/Python24/Lib/lib-tk/Tkconstants.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" column="31" selection-start-line="1" selection-start-column="31" selection-end-line="1" selection-end-column="31" />
+        <state relative-caret-position="212">
+          <caret line="80" selection-start-line="80" selection-end-line="80" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dist/settings.ini">
-      <provider selected="true" editor-type-id="text-editor" />
+    <entry file="file://C:/Python24/Lib/ntpath.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="399">
+          <caret line="230" column="4" selection-start-line="230" selection-start-column="4" selection-end-line="230" selection-end-column="4" />
+        </state>
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/DuplicateFinder.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="281" column="26" selection-start-line="281" selection-start-column="26" selection-end-line="281" selection-end-column="26" />
+        <state relative-caret-position="297">
+          <caret line="387" column="25" selection-start-line="387" selection-start-column="25" selection-end-line="387" selection-end-column="25" />
           <folding>
             <element signature="e#22#32#0" expanded="true" />
-            <marker date="1561378940885" expanded="true" signature="745:750" ph="..." />
-            <marker date="1561378940885" expanded="true" signature="745:965" ph="..." />
-            <marker date="1561378940885" expanded="true" signature="1592:2162" ph="..." />
-            <marker date="1561378940885" expanded="true" signature="1738:1777" ph="..." />
-            <marker date="1561378940885" expanded="true" signature="1834:2162" ph="..." />
-            <marker date="1561378940885" expanded="true" signature="2574:2890" ph="..." />
-            <marker date="1561378940885" expanded="true" signature="2924:3234" ph="..." />
-            <marker date="1561378940885" expanded="true" signature="6549:8809" ph="..." />
-            <marker date="1561378940885" expanded="true" signature="6586:6832" ph="..." />
-            <marker date="1561378940885" expanded="true" signature="6849:8809" ph="..." />
-            <marker date="1561378940885" expanded="true" signature="6983:8809" ph="..." />
-            <marker date="1561378940885" expanded="true" signature="9637:9955" ph="..." />
+            <marker date="1563093697005" expanded="true" signature="911:916" ph="..." />
+            <marker date="1563093697005" expanded="true" signature="911:1131" ph="..." />
+            <marker date="1563093697005" expanded="true" signature="1758:2375" ph="..." />
+            <marker date="1563093697005" expanded="true" signature="1904:1943" ph="..." />
+            <marker date="1563093697005" expanded="true" signature="2021:2375" ph="..." />
+            <marker date="1563093697005" expanded="true" signature="9151:9214" ph="..." />
+            <marker date="1563093697005" expanded="true" signature="11843:11906" ph="..." />
+            <marker date="1563093697005" expanded="true" signature="11929:12285" ph="..." />
           </folding>
         </state>
       </provider>
