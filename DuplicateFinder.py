@@ -293,7 +293,7 @@ def fix_missing():
 
         d = AlternativeFileDialog("Please check if alternative files are ok", alternative_list)
         app.wait_window(d.top)
-
+        print(d.top)
         if not d.cancelled:
             for alternative in alternative_list:
                 if alternative.path_in_fs == '':
@@ -432,18 +432,46 @@ class AlternativeFileDialog(object):
         dict_key = <sequence> (dictionary, key) to associate with user input
         (providing a sequence for dict_key creates an entry for user input)
         """
+
+        def on_close_window():
+            self.cancel()
+
         self.top = Toplevel(AlternativeFileDialog.root)
+        self.top.protocol("WM_DELETE_WINDOW", on_close_window)
         dialog_height = 120
-        if alternative_list:
-            dialog_height += (len(alternative_list) * 20)
+        # if alternative_list:
+        #     dialog_height += (len(alternative_list) * 20)
         self.top.geometry("400x%s+200+200" % dialog_height)
-        frm = Frame(self.top, borderwidth=4, relief='ridge')
-        frm.pack(fill='both', expand=True)
+        # frm = Frame(self.top, borderwidth=4, relief='ridge')
+        # frm.pack(fill='both', expand=True)
 
-        label = Label(frm, text=msg)
-        label.pack(padx=4, pady=4)
+        canvas = Canvas(self.top)
+        canvas.pack(side=LEFT, fill='both', expand=True)
+        # yscrollcommand=scrollbar.set
+        scrollbar = Scrollbar(self.top, orient=VERTICAL, command=canvas.yview)
+        scrollbar.pack(side=RIGHT, fill=Y)
+        canvas.config(yscrollcommand=scrollbar.set)
 
-        headers_frm = Frame(frm)
+        scrollable_frame = Frame(canvas)
+        # scrollable_frame.grid_propagate(False)
+        scrollable_frame.pack(side=LEFT, fill='both', expand=True)
+        canvas_frame = canvas.create_window((0, 0), window=scrollable_frame, anchor=NW)
+        canvas.configure(yscrollcommand=scrollbar.set)
+        # canvas.pack(side="left", fill="both", expand=True)
+        # ,width=scrollable_frame.winfo_width()
+        # scrollable_frame.config(width=frm.winfo_width())
+
+        def on_canvas_configure(event):
+            canvas.configure(scrollregion=canvas.bbox("all"))
+            canvas_width = event.width
+            canvas.itemconfig(canvas_frame, width=canvas_width)
+
+        canvas.bind("<Configure>", on_canvas_configure)
+
+        label = Label(scrollable_frame, text=msg)
+        label.pack(padx=4, pady=4, fill=X)
+
+        headers_frm = Frame(scrollable_frame)
         headers_frm.pack(fill='both')
 
         header1 = Label(headers_frm, text="Path in SET")
@@ -452,7 +480,7 @@ class AlternativeFileDialog(object):
         header2.pack(side=LEFT, padx=3, pady=4, fill=X, expand=True)
 
         self.cancelled = False
-        self.table_frame = Frame(frm)
+        self.table_frame = Frame(scrollable_frame)
         self.table_frame.pack(anchor=N, fill=X, expand=True, side=TOP)
 
         row = 0
@@ -475,7 +503,7 @@ class AlternativeFileDialog(object):
 
                 row += 1
 
-        dialog_actions_frame = Frame(frm)
+        dialog_actions_frame = Frame(scrollable_frame)
         dialog_actions_frame.pack(side=BOTTOM)
 
         b_submit = Button(dialog_actions_frame, text='Submit')
@@ -500,6 +528,7 @@ class AlternativeFileDialog(object):
         self.top.destroy()
 
     def cancel(self):
+        print("cancel")
         self.cancelled = True
         self.top.destroy()
 
