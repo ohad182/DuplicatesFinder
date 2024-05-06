@@ -5,6 +5,7 @@ import time
 import ConfigParser
 
 from Tkinter import *
+import tkMessageBox
 import tkFileDialog
 
 DELETE_MISSING_TEXT = "Delete Missing"
@@ -55,7 +56,7 @@ def write_to_log_file(message):
 
 def log(message):
     print(message)
-    log_panel.insert(END, message + '\n')
+    log_panel.insert(END, "%s\n" % message)
     log_panel.see(END)
     write_to_log_file(message)
 
@@ -119,11 +120,12 @@ write_to_log_file("setting TK_LIBRARY to %s" % tk_lib)
 os.environ['TK_LIBRARY'] = tk_lib
 
 
-def search_file(file_path):
+def search_file(file_path, root=None, stop_first=False):
     file_name = os.path.basename(file_path)
-    drive, _ = os.path.splitdrive(file_path)
-    directories = os.path.dirname(file_path).split(os.sep)
-    root = os.path.join(drive, os.sep, directories[1])
+    if root is None:
+        drive, _ = os.path.splitdrive(file_path)
+        directories = os.path.dirname(file_path).split(os.sep)
+        root = os.path.join(drive, os.sep, directories[1])
 
     log("Searching for '%s' in '%s'" % (file_name, root))
     files = []
@@ -132,6 +134,11 @@ def search_file(file_path):
         for cf in f:
             if file_name.lower() == cf.lower():
                 files.append(os.path.join(r, cf))
+                if stop_first:
+                    break
+
+        if stop_first and len(files) > 0:
+            break
 
     log("Candidates: %s" % ','.join(files))
 
@@ -289,7 +296,7 @@ def fix_missing():
                 af = AlternativeFile(old_path=current_file, os_path="###".join(alternatives), line_index=i - 1)
                 alternative_list.append(af)
             else:
-                log("Warning! request to delete out of range entry (possibly deleted as duplicate")
+                log("Warning! request to delete out of range entry (possibly deleted as duplicate)")
 
         d = AlternativeFileDialog("Please check if alternative files are ok", alternative_list)
         app.wait_window(d.top)
@@ -342,9 +349,9 @@ def select_file():
         reset()
 
 
-def select_folder():
+def select_folder(title="Select Folder"):
     global fs_search_dir
-    dlg_result = tkFileDialog.askdirectory(title="Select Folder", initialdir=select_file_dir)
+    dlg_result = tkFileDialog.askdirectory(title=title, initialdir=select_file_dir)
     if dlg_result is not None:
         fs_search_dir = dlg_result
         print("Search fs set to %s" % fs_search_dir)
@@ -438,10 +445,10 @@ class AlternativeFileDialog(object):
 
         self.top = Toplevel(AlternativeFileDialog.root)
         self.top.protocol("WM_DELETE_WINDOW", on_close_window)
-        dialog_height = 120
+        dialog_height = 320
         # if alternative_list:
         #     dialog_height += (len(alternative_list) * 20)
-        self.top.geometry("400x%s+200+200" % dialog_height)
+        self.top.geometry("600x%s+200+200" % dialog_height)
         # frm = Frame(self.top, borderwidth=4, relief='ridge')
         # frm.pack(fill='both', expand=True)
 
@@ -457,6 +464,7 @@ class AlternativeFileDialog(object):
         scrollable_frame.pack(side=LEFT, fill='both', expand=True)
         canvas_frame = canvas.create_window((0, 0), window=scrollable_frame, anchor=NW)
         canvas.configure(yscrollcommand=scrollbar.set)
+
         # canvas.pack(side="left", fill="both", expand=True)
         # ,width=scrollable_frame.winfo_width()
         # scrollable_frame.config(width=frm.winfo_width())
@@ -467,6 +475,26 @@ class AlternativeFileDialog(object):
             canvas.itemconfig(canvas_frame, width=canvas_width)
 
         canvas.bind("<Configure>", on_canvas_configure)
+
+        search_frame = Frame(scrollable_frame)
+        search_frame.pack(fill='both')
+
+        search_folder_entry_text = StringVar()
+        search_folder_entry = Entry(search_frame, textvariable=search_folder_entry_text, width=50)
+        search_folder_entry.config(state=DISABLED)
+        search_folder_entry.pack(side=LEFT, expand=YES, padx=5, pady=15, fill=X)
+
+        def select_search_dir():
+            dlg_result = tkFileDialog.askdirectory(title="Select Search Base", initialdir=select_file_dir)
+            if dlg_result is not None:
+                search_directory_path = dlg_result
+                print("Search fs set to %s" % search_directory_path)
+                search_folder_entry_text.set(search_directory_path)
+                search_in_folder_btn.config(state=NORMAL)
+                self.update_table(search_directory_path)
+
+        search_in_folder_btn = Button(search_frame, text='Select Search Folder', command=select_search_dir)
+        search_in_folder_btn.pack(side=LEFT, padx=5, pady=15)
 
         label = Label(scrollable_frame, text=msg)
         label.pack(padx=4, pady=4, fill=X)
@@ -514,8 +542,25 @@ class AlternativeFileDialog(object):
         b_cancel['command'] = self.cancel
         b_cancel.pack(side=LEFT, padx=4, pady=4)
 
+    def update_table(self, search_directory_path):
+        table_items = self.table_frame.winfo_children()
+        for i in range(len(table_items)):
+            if i == 0 or i % 2 == 0:
+                original_file_path = table_items[i].get()
+                file_name = os.path.basename(original_file_path)
+
+                alternative_entry = table_items[i + 1]
+                alternative_entry_value = alternative_entry.get()
+
+                if alternative_entry_value.trim() == "":
+                    log("file %s has empty value" % original_file_path)
+                    alternatives = search_file(file_name, search_directory_path, True)
+                    alternative_entry.delete(0, END)
+                    alternative_entry.insert(0, "###".join(alternatives))
+
     def entry_to_dict(self, alternative_list):
         it = iter(self.table_frame.winfo_children())
+        has_empty = False
         for child in it:
             to_change = [x for x in alternative_list if x.path_in_set == child.get()]
             if len(to_change) == 0:
@@ -525,7 +570,13 @@ class AlternativeFileDialog(object):
             else:
                 to_change = to_change[0]
                 to_change.path_in_fs = it.next().get()
-        self.top.destroy()
+                if to_change.path_in_fs == "":
+                    has_empty = True
+
+        if has_empty:
+            tkMessageBox.showerror("Empty Path", "Cannot save if filesystem path is empty")
+        else:
+            self.top.destroy()
 
     def cancel(self):
         print("cancel")
