@@ -485,7 +485,8 @@ class AlternativeFileDialog(object):
         search_folder_entry.pack(side=LEFT, expand=YES, padx=5, pady=15, fill=X)
 
         def select_search_dir():
-            dlg_result = tkFileDialog.askdirectory(title="Select Search Base", initialdir=select_file_dir)
+            dlg_result = tkFileDialog.askdirectory(title="Select Search Base", initialdir=select_file_dir,
+                                                   parent=self.top)
             if dlg_result is not None:
                 search_directory_path = dlg_result
                 print("Search fs set to %s" % search_directory_path)
@@ -552,7 +553,7 @@ class AlternativeFileDialog(object):
                 alternative_entry = table_items[i + 1]
                 alternative_entry_value = alternative_entry.get()
 
-                if alternative_entry_value.trim() == "":
+                if alternative_entry_value.strip() == "":
                     log("file %s has empty value" % original_file_path)
                     alternatives = search_file(file_name, search_directory_path, True)
                     alternative_entry.delete(0, END)
