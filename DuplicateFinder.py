@@ -494,7 +494,7 @@ class AlternativeFileDialog(object):
                 log("Search fs set to %s" % search_directory_path)
                 search_folder_entry_text.set(search_directory_path)
                 search_in_folder_btn.config(state=NORMAL)
-                self.update_table(search_directory_path)
+                self.update_table(search_directory_path, alternative_list)
 
         search_in_folder_btn = Button(search_frame, text='Select Search Folder', command=select_search_dir)
         search_in_folder_btn.pack(side=LEFT, padx=5, pady=15)
@@ -551,7 +551,7 @@ class AlternativeFileDialog(object):
         b_cancel['command'] = self.cancel
         b_cancel.pack(side=LEFT, padx=4, pady=4)
 
-    def update_table(self, search_directory_path):
+    def update_table(self, search_directory_path, alternatives_list):
         table_items = self.table_frame.winfo_children()
         for i in range(len(table_items)):
             if i == 0 or i % 2 == 0:
@@ -563,10 +563,12 @@ class AlternativeFileDialog(object):
 
                 if alternative_entry_value.strip() == "":
                     log("file %s has empty value" % original_file_path)
-                    alternatives = search_file(file_name, search_directory_path, True)
-                    log(alternatives)
+                    alternative_file = search_file(file_name, search_directory_path, True)
+                    log(alternative_file)
                     alternative_entry.delete(0, END)
-                    alternative_entry.insert(0, "###".join(alternatives))
+                    alternative_entry.insert(0, "###".join(alternative_file))
+                    model_file = [x for x in alternatives_list if x.path_in_set == original_file_path]
+                    model_file.path_in_fs = alternative_file
 
     def copy_missing_keys(self):
         """
