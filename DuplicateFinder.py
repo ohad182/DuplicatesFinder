@@ -133,7 +133,9 @@ def search_file(file_path, root=None, stop_first=False):
     for r, d, f in os.walk(root):
         for cf in f:
             if file_name.lower() == cf.lower():
-                files.append(os.path.join(r, cf))
+                path = os.path.join(r, cf)
+                path = path.replace(NON_PATH_SEP, PATH_SEP)
+                files.append(path)
                 if stop_first:
                     break
 
@@ -489,13 +491,19 @@ class AlternativeFileDialog(object):
                                                    parent=self.top)
             if dlg_result is not None:
                 search_directory_path = dlg_result
-                print("Search fs set to %s" % search_directory_path)
+                log("Search fs set to %s" % search_directory_path)
                 search_folder_entry_text.set(search_directory_path)
                 search_in_folder_btn.config(state=NORMAL)
                 self.update_table(search_directory_path)
 
         search_in_folder_btn = Button(search_frame, text='Select Search Folder', command=select_search_dir)
         search_in_folder_btn.pack(side=LEFT, padx=5, pady=15)
+
+        keep_original_frame = Frame(scrollable_frame)
+        keep_original_frame.pack(fill='both')
+
+        keep_original_btn = Button(search_frame, text='Keep Missing Original Files', command=self.copy_missing_keys)
+        keep_original_btn.pack(side=LEFT, padx=5, pady=15)
 
         label = Label(scrollable_frame, text=msg)
         label.pack(padx=4, pady=4, fill=X)
@@ -556,8 +564,26 @@ class AlternativeFileDialog(object):
                 if alternative_entry_value.strip() == "":
                     log("file %s has empty value" % original_file_path)
                     alternatives = search_file(file_name, search_directory_path, True)
+                    log(alternatives)
                     alternative_entry.delete(0, END)
                     alternative_entry.insert(0, "###".join(alternatives))
+
+    def copy_missing_keys(self):
+        """
+        Will copy the missing origin file path to the destination file path if its missing
+        :return:
+        """
+        table_items = self.table_frame.winfo_children()
+        for i in range(len(table_items)):
+            if i == 0 or i % 2 == 0:
+                original_file_path = table_items[i].get()
+
+                alternative_entry = table_items[i + 1]
+                alternative_entry_value = alternative_entry.get()
+
+                if alternative_entry_value.strip() == "":
+                    alternative_entry.delete(0, END)
+                    alternative_entry.insert(0, original_file_path)
 
     def entry_to_dict(self, alternative_list):
         it = iter(self.table_frame.winfo_children())
@@ -575,7 +601,10 @@ class AlternativeFileDialog(object):
                     has_empty = True
 
         if has_empty:
-            tkMessageBox.showerror("Empty Path", "Cannot save if filesystem path is empty")
+            result = tkMessageBox.askokcancel("Empty Path", "Cannot save if filesystem path is empty")
+            if result is True:
+                self.cancelled = False
+                self.top.destroy()
         else:
             self.top.destroy()
 
