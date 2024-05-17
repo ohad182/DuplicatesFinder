@@ -185,6 +185,8 @@ def find_dups():
                 missing_files_lines.append(counter + 1)
                 # create_file_nested(current_file) # debug purpose only
                 log("Warning! file doesn't exist: '%s'" % current_file)
+            else:
+                log("what")
 
             for j in range(counter, len(file_lines)):
                 if counter != j and file_lines[counter].strip() == file_lines[j].strip():
@@ -511,7 +513,7 @@ class AlternativeFileDialog(object):
         def select_search_dir():
             dlg_result = tkFileDialog.askdirectory(title="Select Search Base", initialdir=select_file_dir,
                                                    parent=self.top)
-            if dlg_result is not None:
+            if dlg_result is not None and os.path.exists(dlg_result):
                 search_directory_path = dlg_result
                 log("Search fs set to %s" % search_directory_path)
                 search_folder_entry_text.set(search_directory_path)
