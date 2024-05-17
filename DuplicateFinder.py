@@ -410,6 +410,28 @@ def show_fs_duplicates():
     app.wait_window(d.top)
 
 
+# def get_next(iterator, default=None):
+#     try:
+#         return iterator.__next__()
+#     except StopIteration:
+#         if default is not None:
+#             return default
+#         else:
+#             raise
+def get_next(iterator, default=None):
+    try:
+        return iterator.next()
+    except AttributeError:  # Handle generators
+        try:
+            return iterator.__next__()
+        except AttributeError:
+            raise TypeError("'%s' object is not an iterator or generator" % type(iterator).__name__)
+    except StopIteration:
+        if default is not None:
+            return default
+        else:
+            raise
+
 class FileInfo(object):
     def __init__(self, **kwargs):
         fp = kwargs.get("full_path")
@@ -567,8 +589,9 @@ class AlternativeFileDialog(object):
                     log(alternative_file)
                     alternative_entry.delete(0, END)
                     alternative_entry.insert(0, "###".join(alternative_file))
-                    model_file = [x for x in alternatives_list if x.path_in_set == original_file_path]
-                    model_file.path_in_fs = alternative_file
+                    model_file = get_next((x for x in alternatives_list if x.path_in_set == original_file_path), None)
+                    if model_file is not None:
+                        model_file.path_in_fs = alternative_file
 
     def copy_missing_keys(self):
         """
