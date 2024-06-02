@@ -185,8 +185,8 @@ def find_dups():
                 missing_files_lines.append(counter + 1)
                 # create_file_nested(current_file) # debug purpose only
                 log("Warning! file doesn't exist: '%s'" % current_file)
-            else:
-                log("what")
+            # else:
+                # log("what")
 
             for j in range(counter, len(file_lines)):
                 if counter != j and file_lines[counter].strip() == file_lines[j].strip():
